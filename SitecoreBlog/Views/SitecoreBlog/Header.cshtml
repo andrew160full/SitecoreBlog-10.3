@@ -1,0 +1,24 @@
+@{
+    var item = Sitecore.Context.Database.GetItem("/sitecore/content/Home/SitecoreBlog/SiteSettings/GlobalSetting");
+    String hourString = DateTime.Now.ToString("HH");
+    int hour = int.Parse(hourString);
+    string backgroundColor = "darkblue";
+    if (hour >= 17 && hour <= 7)
+    {
+        backgroundColor = "black";
+    }
+}
+
+<header>
+    <div class="container" style="background-color:@backgroundColor;">
+        <div class="jumbotron text-white" style="background-color:@backgroundColor;">
+            <h1 class="display-3">Sitecore Powered Blog</h1>
+            <p class="lead">
+                <a href="https://jss.sitecore.com/" class="text-light">
+                    @item.Fields["WebsiteHeading"].Value
+                </a>
+                @item.Fields["WebsiteSubheading"].Value
+            </p>
+        </div>
+    </div>
+</header>

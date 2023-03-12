@@ -1,0 +1,90 @@
+@using System.Collections;
+@using System;
+
+@{
+}
+@model IEnumerable<Sitecore.Data.Items.Item>
+
+<main role="main" class="container blog-posts">
+
+    <div class="main-search">
+        <div class="input-group">
+            <form class="input-group" method="get" action="@Url.Action("DoSearch", "SitecoreBlog")">
+                <input type="text" name="searchText" />
+                <button class="btn btn-dark" id="searchButton" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+    <br>
+
+    <div class="row" id="resultsItem">
+        @if (Model != null)
+        {
+            foreach (Sitecore.Data.Items.Item item in Model)
+            {
+                <div class="blog-post-card card col-lg-4 col-md-6">
+                    @Html.Sitecore().Field("blogImage", item, new { format = "MMM dd,yyyy", @class = "card-img-top" })
+                    <div class="card-body bg-light">
+                        <strong class="d-inline-block mb-2 text-success">
+                            @Html.Sitecore().Field("topic", item)
+                        </strong>
+                        <h3 class="card-title">
+                            @Html.Sitecore().Field("title", item)
+                        </h3>
+                        <div class="mb-1 text-muted">
+                            @Html.Sitecore().Field("postedDate", item, new { format = "MMM dd, yyyy" })
+                        </div>
+                        <p>
+                            @Html.Sitecore().Field("shortDescription", item)
+                        </p>
+                        @{
+                            var url = Sitecore.Links.LinkManager.GetItemUrl(item);
+                            <a href="@url" class="btn btn-warning btn-block">Read on</a>
+                        }
+                    </div>
+                </div>
+            }
+
+        }
+    </div>
+</main>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+		$(document).ready(function () {
+			$("#searchButton").click(function (e) {
+				// debugger;
+				e.preventDefault();
+				$.ajax({
+					type: "GET",
+					datatype: "JSON", url: "@Url.Action("DoSearch", "SitecoreBlog")",
+					contentType: "application/json",
+					data: {
+						searchText: $("#searchInput").val()
+					},
+					success: function (result) {
+						var resultText = "";
+						$('#resultsItem').text(resultText);
+						$('#resultsItem').append("Results from SOLR index <BR><BR>");
+						$(result.Results).each(function (index, item) {
+							// each iteration
+							//var Description = item.Description;
+							//var Title = item.Title;
+							//var Author = item.Author;
+							//var ItemName = item.ItemName;
+							//resultText += (index + 1) + " - " + ItemName + Title + "; " + Author + "; " + Description + "; " + "<BR><BR>";
+							var BlogId = item.BlogId;
+							var BlogTitle = item.BlogTitle;
+                            resultText += (index + 1) + " - " + BlogId + " - " + BlogTitle + "; " + "<BR><BR>";
+						});
+						$('#resultsItem').append(resultText);
+					},
+					error: function (result) {
+						alert('error');
+                        console.error(result);
+					}
+				});
+			});
+		});
+</script>

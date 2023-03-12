@@ -1,0 +1,18 @@
+<div class="blog-post-card card col-lg-4 col-md-6">
+        <img class="card-img-top" src="assets/images/developer.jpg" alt="Card image cap">
+        <div class="card-body bg-light">
+          <strong class="d-inline-block mb-2 text-success">
+            @Html.Sitecore().Field("topic")
+          </strong>
+          <h3 class="card-title">
+            @Html.Sitecore().Field("title")
+          </h3>
+          <div class="mb-1 text-muted">
+            @Html.Sitecore().Field("postedDate")
+          </div>
+          <p>
+            @Html.Sitecore().Field("shortDescription")
+          </p>
+    <a href="#" class="btn btn-warning btn-block">Read on</a>
+  </div>
+</div>

@@ -1,0 +1,120 @@
+@using System.Collections;
+@using System;
+@using System.Globalization;
+@{
+}
+@model IEnumerable<Sitecore.Data.Items.Item>
+
+@RenderPage("Header.cshtml")
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/Content/bootstrap-themed.min.css" type="text/css">
+    <link rel="stylesheet" href="~/Content/blogsite.css" type="text/css">
+
+    <title>Sitecore Powered Blog</title>
+
+</head>
+
+<body>
+
+    <main role="main" class="container blog-posts">
+
+        <div class="main-search">
+            <div class="input-group">
+                <form class="input-group" method="get" action="@Url.Action("DoSearch", "SitecoreBlog")">
+                    <input type="text" name="searchText" />
+                    <button class="btn btn-dark" id="searchButton" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+        <br>
+
+        <div class="row" id="resultsItem">
+            @if (Model != null)
+                {
+                    foreach (Sitecore.Data.Items.Item item in Model)
+                    {
+                        var mediaItem = ((Sitecore.Data.Fields.ImageField)item.Fields["BlogImage"]).MediaItem;
+
+                        var imageHTML = Sitecore.Resources.Media.MediaManager.GetMediaUrl(mediaItem);
+                        var postedDate = DateTime.ParseExact(item.Fields["PostedDate"].Value, "yyyyMMddTHHmmssZ", CultureInfo.InvariantCulture);
+                        <div class="blog-post-card card col-lg-4 col-md-6">
+                        <img class="card-img-top" src="@imageHTML" alt="Blog image" />
+
+                        @*@Html.Sitecore().Field("blogImage", item, new { format = "MMM dd,yyyy", @class = "card-img-top" })*@
+                        <div class="card-body bg-light">
+                            <strong class="d-inline-block mb-2 text-success">
+                                @Html.Raw(item.Fields["topic"].Value)
+                            </strong>
+                            <h3 class="card-title">
+                                @Html.Raw(item.Fields["title"].Value)
+
+                            </h3>
+                            <div class="mb-1 text-muted">
+                                
+                                @postedDate
+                            </div>
+                            <p>
+                                @Html.Raw(item.Fields["shortDescription"].Value)
+
+                            </p>
+                            @{
+                                var url = Sitecore.Links.LinkManager.GetItemUrl(item);
+                                <a href="@url" class="btn btn-warning btn-block">Read on</a>
+                            }
+                        </div>
+                    </div>
+                }
+
+            }
+        </div>
+    </main>
+
+    @RenderPage("Footer.cshtml")
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script>
+		$(document).ready(function () {
+			$("#searchButton").click(function (e) {
+				// debugger;
+				e.preventDefault();
+				$.ajax({
+					type: "GET",
+					datatype: "JSON", url: "@Url.Action("DoSearch", "SitecoreBlog")",
+					contentType: "application/json",
+					data: {
+						searchText: $("#searchInput").val()
+					},
+					success: function (result) {
+						var resultText = "";
+						$('#resultsItem').text(resultText);
+						$('#resultsItem').append("Results from SOLR index <BR><BR>");
+						$(result.Results).each(function (index, item) {
+							// each iteration
+							//var Description = item.Description;
+							//var Title = item.Title;
+							//var Author = item.Author;
+							//var ItemName = item.ItemName;
+							//resultText += (index + 1) + " - " + ItemName + Title + "; " + Author + "; " + Description + "; " + "<BR><BR>";
+							var BlogId = item.BlogId;
+							var BlogTitle = item.BlogTitle;
+                            resultText += (index + 1) + " - " + BlogId + " - " + BlogTitle + "; " + "<BR><BR>";
+						});
+						$('#resultsItem').append(resultText);
+					},
+					error: function (result) {
+						alert('error');
+                        console.error(result);
+					}
+				});
+			});
+		});
+    </script>
+</body>

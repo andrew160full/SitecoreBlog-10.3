@@ -1,0 +1,32 @@
+@using Sitecore.Mvc
+@using Sitecore.Mvc.Analytics.Extensions
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="~/Content/bootstrap-themed.min.css" type="text/css">
+  <link rel="stylesheet" href="~/Content/blogsite.css" type="text/css">
+  
+  <title>Sitecore Powered Blog</title>
+
+</head>
+
+<body>
+
+  @Html.Sitecore().Placeholder("phHeader")
+
+
+  @Html.Sitecore().Placeholder("phMain")
+
+
+  @Html.Sitecore().Placeholder("phFooter")
+
+</body>
+</html>
